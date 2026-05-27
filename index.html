@@ -45,7 +45,6 @@ body {
   flex-direction: column;
 }
 
-/* ── HEADER ── */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -126,7 +125,6 @@ header {
 .btn-save:hover { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-/* ── LAYOUT ── */
 .workspace {
   flex: 1;
   display: grid;
@@ -135,7 +133,6 @@ header {
   height: calc(100vh - 56px);
 }
 
-/* ── EDITOR SIDE ── */
 .editor-side {
   overflow-y: auto;
   padding: 24px;
@@ -154,7 +151,6 @@ header {
   margin-bottom: 4px;
 }
 
-/* ── CARD ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -237,7 +233,6 @@ header {
 }
 .card.open .card-body { display: block; }
 
-/* ── FIELDS ── */
 .field-group { display: flex; flex-direction: column; gap: 10px; }
 
 .field {
@@ -306,7 +301,6 @@ header {
 }
 .field-input textarea { resize: vertical; min-height: 68px; line-height: 1.5; }
 
-/* locked field display */
 .locked-value {
   background: var(--locked-bg);
   border: 1px solid var(--locked-bd);
@@ -321,7 +315,6 @@ header {
 }
 .locked-value .lv-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* toggle */
 .toggle-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
 .toggle-wrap {
   position: relative;
@@ -349,13 +342,11 @@ header {
 .toggle-wrap input:checked ~ .toggle-thumb { transform: translateX(16px); }
 .toggle-label { font-size: 12px; font-family: var(--mono); color: var(--ink-2); }
 
-/* char count */
 .char-row { display: flex; justify-content: flex-end; margin-top: 3px; }
 .char-count { font-size: 10px; font-family: var(--mono); color: var(--ink-3); }
 .char-count.warn { color: var(--warn); }
 .char-count.over { color: var(--danger); }
 
-/* ── ARRAY ── */
 .array-wrap { display: flex; flex-direction: column; gap: 0; }
 .array-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
 
@@ -434,7 +425,6 @@ header {
 .arr-add-btn:hover { border-color: var(--accent-bd); color: var(--accent); background: var(--accent-bg); }
 .arr-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* nested section indent */
 .nested-card {
   border: 1px solid var(--border);
   border-left: 3px solid var(--border2);
@@ -446,7 +436,6 @@ header {
 .nested-card .card-header { padding: 8px 12px; }
 .nested-card .card-body { padding: 10px 12px; }
 
-/* ── PREVIEW SIDE ── */
 .preview-side {
   border-left: 1px solid var(--border);
   background: #1c1c1a;
@@ -502,15 +491,12 @@ header {
 }
 .preview-body.template-view { color: #6b6760; }
 
-/* JSON syntax */
 .jk  { color: #79b8ff; }
 .js  { color: #85e89d; }
 .jn  { color: #f8a97d; }
 .jb  { color: #c397d8; }
 .jp  { color: #444; }
 .jnull { color: #555; }
-
-/* annotation comments */
 .jcmt { color: #3d5a38; font-style: italic; }
 
 .flash { animation: flash 0.4s ease; }
@@ -519,7 +505,6 @@ header {
   100% { background: transparent; }
 }
 
-/* ── SAVE TOAST ── */
 #toast {
   position: fixed;
   bottom: 24px; right: 24px;
@@ -546,7 +531,6 @@ header {
 .toast-msg  { flex: 1; }
 .toast-sub  { font-size: 11px; color: var(--ink-3); font-weight: 400; }
 
-/* ── API LOG ── */
 .api-log {
   border-top: 1px solid #2e2e2a;
   padding: 10px 16px;
@@ -566,13 +550,11 @@ header {
 .api-log-entry .status-ok  { color: #4ade80; }
 .api-log-entry .status-err { color: #f87171; }
 
-/* scrollbars */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 .preview-side ::-webkit-scrollbar-thumb { background: #333; }
 
-/* drag-over line */
 .drop-line {
   height: 2px; background: var(--accent);
   border-radius: 1px; margin: 1px 0;
@@ -583,7 +565,6 @@ header {
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-icon">{J}</div>
@@ -593,7 +574,7 @@ header {
   <div class="header-mid">
     <div class="template-tag">
       <div class="dot"></div>
-      <span>Template: <strong>product-page-config</strong></span>
+      <span id="template-name-tag">Template: <strong>product-page-config</strong></span>
     </div>
   </div>
   <div class="header-right">
@@ -606,15 +587,11 @@ header {
   </div>
 </header>
 
-<!-- WORKSPACE -->
 <div class="workspace">
-
-  <!-- EDITOR -->
   <div class="editor-side" id="editor-root">
     <div class="section-label">Editable Fields</div>
   </div>
 
-  <!-- PREVIEW -->
   <div class="preview-side">
     <div class="preview-header">
       <div class="preview-tabs">
@@ -628,10 +605,8 @@ header {
       <div class="api-log-entry"><span style="color:#444">— API log will appear here after save —</span></div>
     </div>
   </div>
-
 </div>
 
-<!-- TOAST -->
 <div id="toast">
   <span class="toast-icon" id="toast-icon">✓</span>
   <div>
@@ -640,33 +615,24 @@ header {
   </div>
 </div>
 
-<!-- LOAD DIALOG (hidden textarea) -->
-<div id="load-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:center;justify-content:center;">
+<div id="load-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:560px;max-height:80vh;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-md);">
-    <div style="font-size:15px;font-weight:700;">Load Template JSON</div>
-    <div style="font-size:12px;color:var(--ink-2);">Paste your annotated template JSON below. Fields with <code style="background:var(--surface3);padding:1px 4px;border-radius:3px;">_editable: true</code> will be shown in the editor.</div>
+    <div style="font-size:15px;font-weight:700;">Load JSON</div>
+    <div style="font-size:12px;color:var(--ink-2);">
+      Paste any JSON below — both plain JSON and annotated templates (with <code style="background:var(--surface3);padding:1px 4px;border-radius:3px;">_editable</code>, <code style="background:var(--surface3);padding:1px 4px;border-radius:3px;">_value</code>) are supported.
+    </div>
     <textarea id="load-textarea" style="flex:1;min-height:240px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;color:var(--ink);outline:none;resize:vertical;"></textarea>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button class="btn" onclick="closeLoadDialog()">Cancel</button>
-      <button class="btn btn-primary" onclick="loadFromDialog()">Load Template</button>
+      <button class="btn btn-primary" onclick="loadFromDialog()">Load</button>
     </div>
   </div>
 </div>
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK TEMPLATE JSON
-// Convention:
-//   _editable: true/false  — can user change this value?
-//   _type: "text"|"textarea"|"select"|"boolean"|"number" — input type
-//   _options: [...]         — for select type
-//   _required: true         — must not be empty
-//   _maxLength: N           — text length cap
-//   _description: "..."     — helper hint shown in UI
-//   _reorderable: true      — array items can be dragged
-//   _maxItems: N            — max array length
+// DEFAULT ANNOTATED TEMPLATE
 // ─────────────────────────────────────────────────────────────────────────────
-
 const MOCK_TEMPLATE = {
   "_meta": {
     "templateId": "product-page-config",
@@ -850,26 +816,124 @@ const MOCK_TEMPLATE = {
 // STATE
 // ─────────────────────────────────────────────────────────────────────────────
 let template = MOCK_TEMPLATE;
-let outputData = {};       // the clean output JSON being built
 let openCards = new Set(["page","hero","features","pricing","seo"]);
-let openArrItems = new Map();  // key → Set of open indices
+let openArrItems = new Map();
 let dragSrcSection = null;
 let dragSrcArr = null;
 let currentTab = "output";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TEMPLATE PARSER → OUTPUT EXTRACTOR
+// PLAIN JSON → ANNOTATED TEMPLATE CONVERTER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function isAnnotatedTemplate(obj) {
+  // Check if the object uses _value/_editable/_type convention
+  if (typeof obj !== "object" || obj === null) return false;
+  return Object.values(obj).some(function(v) {
+    if (v && typeof v === "object") {
+      if ("_value" in v || "_editable" in v || "_type" in v) return true;
+      // Check one level deeper
+      return Object.values(v).some(function(v2) {
+        return v2 && typeof v2 === "object" && ("_value" in v2 || "_editable" in v2);
+      });
+    }
+    return false;
+  });
+}
+
+function inferType(value) {
+  if (typeof value === "boolean") return "boolean";
+  if (typeof value === "number") return "number";
+  if (typeof value === "string") return value.length > 80 ? "textarea" : "text";
+  if (Array.isArray(value)) return "array";
+  if (typeof value === "object" && value !== null) return "object";
+  return "text";
+}
+
+function convertValueToAnnotated(value) {
+  if (value === null || value === undefined) {
+    return { _value: value === undefined ? "" : value, _editable: true, _type: "text" };
+  }
+
+  var t = inferType(value);
+
+  if (t === "boolean") {
+    return { _value: value, _editable: true, _type: "boolean" };
+  }
+
+  if (t === "number") {
+    return { _value: value, _editable: true, _type: "number" };
+  }
+
+  if (t === "text" || t === "textarea") {
+    return { _value: value, _editable: true, _type: t };
+  }
+
+  if (t === "array") {
+    if (value.length === 0) {
+      return { _type: "array", _editable: true, _reorderable: true, _value: [], _itemSchema: {} };
+    }
+    var schema = {};
+    var firstItem = value[0];
+    if (firstItem !== null && typeof firstItem === "object" && !Array.isArray(firstItem)) {
+      Object.keys(firstItem).forEach(function(k) {
+        var fv = firstItem[k];
+        var ft = inferType(fv);
+        schema[k] = { _type: ft === "object" || ft === "array" ? "text" : ft, _editable: true };
+      });
+    } else {
+      schema["value"] = { _type: "text", _editable: true };
+    }
+    var items = value.map(function(item) {
+      if (item !== null && typeof item === "object" && !Array.isArray(item)) {
+        var out = {};
+        Object.keys(item).forEach(function(k) { out[k] = item[k]; });
+        return out;
+      }
+      return { value: item };
+    });
+    return {
+      _type: "array",
+      _editable: true,
+      _reorderable: true,
+      _itemSchema: schema,
+      _value: items
+    };
+  }
+
+  if (t === "object") {
+    // Recurse: convert each key
+    var result = {};
+    Object.keys(value).forEach(function(k) {
+      result[k] = convertValueToAnnotated(value[k]);
+    });
+    return result;
+  }
+
+  return { _value: String(value), _editable: true, _type: "text" };
+}
+
+function plainJsonToTemplate(parsed) {
+  var result = {};
+  Object.keys(parsed).forEach(function(k) {
+    var v = parsed[k];
+    result[k] = convertValueToAnnotated(v);
+  });
+  return result;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OUTPUT EXTRACTOR
 // ─────────────────────────────────────────────────────────────────────────────
 function extractOutput(node) {
   if (node === null || typeof node !== "object") return node;
   if (Array.isArray(node)) return node.map(extractOutput);
 
-  // leaf value node
   if ("_value" in node) {
     if (node._type === "array") {
-      return (node._value || []).map(item => {
-        const out = {};
-        Object.keys(item).forEach(k => {
+      return (node._value || []).map(function(item) {
+        var out = {};
+        Object.keys(item).forEach(function(k) {
           if (!k.startsWith("_")) out[k] = item[k];
         });
         return out;
@@ -878,12 +942,10 @@ function extractOutput(node) {
     return node._value;
   }
 
-  // structural node
-  const result = {};
-  for (const [k, v] of Object.entries(node)) {
-    if (k.startsWith("_")) continue;
-    result[k] = extractOutput(v);
-  }
+  var result = {};
+  Object.keys(node).forEach(function(k) {
+    if (!k.startsWith("_")) result[k] = extractOutput(node[k]);
+  });
   return result;
 }
 
@@ -891,82 +953,74 @@ function extractOutput(node) {
 // RENDER ENGINE
 // ─────────────────────────────────────────────────────────────────────────────
 function render() {
-  const root = document.getElementById("editor-root");
-  // keep section label
+  var root = document.getElementById("editor-root");
   root.innerHTML = '<div class="section-label">Editable Fields</div>';
 
-  for (const [key, value] of Object.entries(template)) {
-    if (key.startsWith("_")) continue;
-    const card = buildTopCard(key, value);
+  Object.keys(template).forEach(function(key) {
+    if (key.startsWith("_")) return;
+    var card = buildTopCard(key, template[key]);
     root.appendChild(card);
-  }
+  });
 
   refreshPreview();
 }
 
 function buildTopCard(key, node) {
-  const isOpen = openCards.has(key);
-  const isArray = node._type === "array";
-  const isLocked = node._editable === false && !isArray;
+  var isOpen = openCards.has(key);
+  var isArray = node._type === "array";
+  var isLocked = node._editable === false && !isArray;
 
-  const div = document.createElement("div");
+  var div = document.createElement("div");
   div.className = "card" + (isOpen ? " open" : "");
   div.dataset.sectionKey = key;
   div.draggable = true;
 
-  // count editable fields
-  let editCount = 0, totalCount = 0;
+  var editCount = 0, totalCount = 0;
   if (!isArray && typeof node === "object") {
-    countFields(node, (editable) => { totalCount++; if (editable) editCount++; });
+    countFields(node, function(editable) { totalCount++; if (editable) editCount++; });
   }
 
-  const typeLabel = isArray ? "array" : (isLocked ? "locked" : "object");
-  const typeCls   = isArray ? "tb-array" : (isLocked ? "tb-locked" : "tb-object");
-  const arrLen    = isArray ? (node._value||[]).length : null;
+  var typeLabel = isArray ? "array" : (isLocked ? "locked" : "object");
+  var typeCls   = isArray ? "tb-array" : (isLocked ? "tb-locked" : "tb-object");
+  var arrLen    = isArray ? (node._value||[]).length : null;
 
-  div.innerHTML = `
-    <div class="card-header">
-      <div class="grip" title="Drag to reorder"><i></i><i></i><i></i></div>
-      <div class="chevron">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M9 18l6-6-6-6"/>
-        </svg>
-      </div>
-      <span class="card-key">${key}</span>
-      <span class="type-badge ${typeCls}">${typeLabel}</span>
-      <span class="card-meta">${isArray ? arrLen+" items" : (totalCount ? editCount+"/"+totalCount+" editable" : "")}</span>
-    </div>
-    <div class="card-body"></div>
-  `;
+  div.innerHTML =
+    '<div class="card-header">' +
+      '<div class="grip" title="Drag to reorder"><i></i><i></i><i></i></div>' +
+      '<div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>' +
+      '<span class="card-key">' + escHtml(key) + '</span>' +
+      '<span class="type-badge ' + typeCls + '">' + typeLabel + '</span>' +
+      '<span class="card-meta">' + (isArray ? arrLen + " items" : (totalCount ? editCount + "/" + totalCount + " editable" : "")) + '</span>' +
+    '</div>' +
+    '<div class="card-body"></div>';
 
-  div.querySelector(".card-header").addEventListener("click", (e) => {
+  div.querySelector(".card-header").addEventListener("click", function(e) {
     if (e.target.closest(".grip")) return;
-    isOpen ? openCards.delete(key) : openCards.add(key);
+    if (isOpen) openCards.delete(key); else openCards.add(key);
     render();
   });
 
-  // drag section reorder
-  div.addEventListener("dragstart", (e) => {
+  div.addEventListener("dragstart", function(e) {
     if (e.target.closest(".arr-item")) return;
     dragSrcSection = key;
     div.classList.add("dragging");
     e.dataTransfer.effectAllowed = "move";
     e.stopPropagation();
   });
-  div.addEventListener("dragend", () => {
+  div.addEventListener("dragend", function() {
     div.classList.remove("dragging");
     dragSrcSection = null;
   });
-  div.addEventListener("dragover", (e) => {
+  div.addEventListener("dragover", function(e) {
     if (dragSrcSection && dragSrcSection !== key && !dragSrcArr) {
       e.preventDefault();
       div.classList.add("drag-target");
     }
   });
-  div.addEventListener("dragleave", (e) => {
+  div.addEventListener("dragleave", function(e) {
     if (!div.contains(e.relatedTarget)) div.classList.remove("drag-target");
   });
-  div.addEventListener("drop", (e) => {
+  div.addEventListener("drop", function(e) {
     div.classList.remove("drag-target");
     if (dragSrcSection && dragSrcSection !== key && !dragSrcArr) {
       e.preventDefault();
@@ -976,7 +1030,7 @@ function buildTopCard(key, node) {
   });
 
   if (isOpen) {
-    const body = div.querySelector(".card-body");
+    var body = div.querySelector(".card-body");
     if (isArray) {
       body.appendChild(buildArrayEditor(key, node));
     } else {
@@ -991,41 +1045,39 @@ function countFields(node, cb) {
   if (!node || typeof node !== "object") return;
   if ("_value" in node) { cb(node._editable !== false); return; }
   if (node._type === "array") { cb(true); return; }
-  Object.keys(node).filter(k => !k.startsWith("_")).forEach(k => countFields(node[k], cb));
+  Object.keys(node).filter(function(k) { return !k.startsWith("_"); }).forEach(function(k) {
+    countFields(node[k], cb);
+  });
 }
 
 function buildObjectFields(sectionKey, node, path) {
-  const group = document.createElement("div");
+  var group = document.createElement("div");
   group.className = "field-group";
 
-  for (const [k, v] of Object.entries(node)) {
-    if (k.startsWith("_")) continue;
-    const fullPath = [...path, k];
+  Object.keys(node).forEach(function(k) {
+    if (k.startsWith("_")) return;
+    var v = node[k];
+    var fullPath = path.concat([k]);
 
     if (v && typeof v === "object" && !("_value" in v) && v._type !== "array") {
-      // nested object → nested card
-      const nested = document.createElement("div");
+      // nested object
+      var nested = document.createElement("div");
       nested.className = "nested-card";
-      const isOpen = openCards.has(sectionKey + "." + k);
-      nested.innerHTML = `
-        <div class="card-header">
-          <div class="chevron">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </div>
-          <span class="card-key"><span class="path">${sectionKey}.</span>${k}</span>
-          <span class="type-badge tb-object">object</span>
-        </div>
-        <div class="card-body"></div>
-      `;
-      nested.classList.toggle("open", isOpen);
-      nested.querySelector(".card-header").addEventListener("click", () => {
-        const nk = sectionKey + "." + k;
-        openCards.has(nk) ? openCards.delete(nk) : openCards.add(nk);
+      var nk = sectionKey + "." + k;
+      var nOpen = openCards.has(nk);
+      nested.innerHTML =
+        '<div class="card-header">' +
+          '<div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>' +
+          '<span class="card-key"><span class="path">' + escHtml(sectionKey) + '.</span>' + escHtml(k) + '</span>' +
+          '<span class="type-badge tb-object">object</span>' +
+        '</div>' +
+        '<div class="card-body"></div>';
+      nested.classList.toggle("open", nOpen);
+      nested.querySelector(".card-header").addEventListener("click", function() {
+        if (openCards.has(nk)) openCards.delete(nk); else openCards.add(nk);
         render();
       });
-      if (isOpen) {
+      if (nOpen) {
         nested.querySelector(".card-body").appendChild(buildObjectFields(sectionKey, v, fullPath));
       }
       group.appendChild(nested);
@@ -1034,51 +1086,51 @@ function buildObjectFields(sectionKey, node, path) {
     } else if (v && "_value" in v) {
       group.appendChild(buildField(sectionKey, v, fullPath));
     }
-  }
+  });
 
   return group;
 }
 
 function buildField(sectionKey, node, path) {
-  const row = document.createElement("div");
+  var row = document.createElement("div");
   row.className = "field";
 
-  const key = path[path.length - 1];
-  const locked = node._editable === false;
+  var key = path[path.length - 1];
+  var locked = node._editable === false;
 
-  const meta = document.createElement("div");
+  var meta = document.createElement("div");
   meta.className = "field-meta";
-  meta.innerHTML = `
-    <div class="field-key">
-      ${key}${node._required ? '<span class="req-star">*</span>' : ""}
-      ${locked ? '<span class="lock-icon">🔒</span>' : ""}
-    </div>
-    ${node._description ? `<div class="field-desc">${node._description}</div>` : ""}
-  `;
+  meta.innerHTML =
+    '<div class="field-key">' +
+      escHtml(key) +
+      (node._required ? '<span class="req-star">*</span>' : "") +
+      (locked ? '<span class="lock-icon">🔒</span>' : "") +
+    '</div>' +
+    (node._description ? '<div class="field-desc">' + escHtml(node._description) + '</div>' : "");
 
-  const inputWrap = document.createElement("div");
+  var inputWrap = document.createElement("div");
   inputWrap.className = "field-input";
 
   if (locked) {
-    const lv = document.createElement("div");
+    var lv = document.createElement("div");
     lv.className = "locked-value";
-    lv.innerHTML = `<span class="lv-text">${String(node._value ?? "")}</span><span style="font-size:10px;opacity:0.4">locked</span>`;
+    lv.innerHTML = '<span class="lv-text">' + escHtml(String(node._value !== null && node._value !== undefined ? node._value : "")) + '</span><span style="font-size:10px;opacity:0.4">locked</span>';
     inputWrap.appendChild(lv);
   } else if (node._type === "boolean") {
-    const tr = document.createElement("div");
+    var tr = document.createElement("div");
     tr.className = "toggle-row";
-    const lbl = document.createElement("label");
+    var lbl = document.createElement("label");
     lbl.className = "toggle-wrap";
-    const inp = document.createElement("input");
+    var inp = document.createElement("input");
     inp.type = "checkbox";
     inp.checked = !!node._value;
-    const track = document.createElement("div"); track.className = "toggle-track";
-    const thumb = document.createElement("div"); thumb.className = "toggle-thumb";
+    var track = document.createElement("div"); track.className = "toggle-track";
+    var thumb = document.createElement("div"); thumb.className = "toggle-thumb";
     lbl.appendChild(inp); lbl.appendChild(track); lbl.appendChild(thumb);
-    const valLbl = document.createElement("span");
+    var valLbl = document.createElement("span");
     valLbl.className = "toggle-label";
     valLbl.textContent = node._value ? "true" : "false";
-    inp.addEventListener("change", () => {
+    inp.addEventListener("change", function() {
       node._value = inp.checked;
       valLbl.textContent = inp.checked ? "true" : "false";
       refreshPreview();
@@ -1086,23 +1138,23 @@ function buildField(sectionKey, node, path) {
     tr.appendChild(lbl); tr.appendChild(valLbl);
     inputWrap.appendChild(tr);
   } else if (node._type === "select") {
-    const sel = document.createElement("select");
-    (node._options || []).forEach(opt => {
-      const o = document.createElement("option");
+    var sel = document.createElement("select");
+    (node._options || []).forEach(function(opt) {
+      var o = document.createElement("option");
       o.value = opt; o.textContent = opt;
       if (node._value === opt) o.selected = true;
       sel.appendChild(o);
     });
-    if (node._value === undefined) { node._value = node._options?.[0]; }
-    sel.addEventListener("change", () => { node._value = sel.value; refreshPreview(); });
+    if (node._value === undefined && node._options && node._options.length) node._value = node._options[0];
+    sel.addEventListener("change", function() { node._value = sel.value; refreshPreview(); });
     inputWrap.appendChild(sel);
   } else if (node._type === "textarea") {
-    const ta = document.createElement("textarea");
+    var ta = document.createElement("textarea");
     ta.value = node._value || "";
     ta.placeholder = node._description || "";
     if (node._maxLength) ta.maxLength = node._maxLength;
-    const cc = buildCharCount(ta.value.length, node._maxLength);
-    ta.addEventListener("input", () => {
+    var cc = buildCharCount((ta.value || "").length, node._maxLength);
+    ta.addEventListener("input", function() {
       node._value = ta.value;
       if (node._maxLength) updateCharCount(cc, ta.value.length, node._maxLength);
       refreshPreview();
@@ -1110,26 +1162,26 @@ function buildField(sectionKey, node, path) {
     inputWrap.appendChild(ta);
     if (node._maxLength) inputWrap.appendChild(cc);
   } else if (node._type === "number") {
-    const inp = document.createElement("input");
-    inp.type = "number";
-    inp.value = node._value ?? 0;
-    inp.min = 0;
-    inp.addEventListener("input", () => { node._value = Number(inp.value); refreshPreview(); });
-    inputWrap.appendChild(inp);
+    var ni = document.createElement("input");
+    ni.type = "number";
+    ni.value = node._value !== undefined ? node._value : 0;
+    ni.min = 0;
+    ni.addEventListener("input", function() { node._value = Number(ni.value); refreshPreview(); });
+    inputWrap.appendChild(ni);
   } else {
-    const inp = document.createElement("input");
-    inp.type = "text";
-    inp.value = node._value || "";
-    inp.placeholder = node._description || "";
-    if (node._maxLength) inp.maxLength = node._maxLength;
-    const cc = buildCharCount((node._value||"").length, node._maxLength);
-    inp.addEventListener("input", () => {
-      node._value = inp.value;
-      if (node._maxLength) updateCharCount(cc, inp.value.length, node._maxLength);
+    var ti = document.createElement("input");
+    ti.type = "text";
+    ti.value = node._value !== null && node._value !== undefined ? String(node._value) : "";
+    ti.placeholder = node._description || "";
+    if (node._maxLength) ti.maxLength = node._maxLength;
+    var cc2 = buildCharCount((ti.value || "").length, node._maxLength);
+    ti.addEventListener("input", function() {
+      node._value = ti.value;
+      if (node._maxLength) updateCharCount(cc2, ti.value.length, node._maxLength);
       refreshPreview();
     });
-    inputWrap.appendChild(inp);
-    if (node._maxLength) inputWrap.appendChild(cc);
+    inputWrap.appendChild(ti);
+    if (node._maxLength) inputWrap.appendChild(cc2);
   }
 
   row.appendChild(meta);
@@ -1138,37 +1190,38 @@ function buildField(sectionKey, node, path) {
 }
 
 function buildArrayEditor(nodeKey, node, path) {
-  const wrap = document.createElement("div");
+  var wrap = document.createElement("div");
   wrap.className = "array-wrap";
-  const list = document.createElement("div");
+  var list = document.createElement("div");
   list.className = "array-list";
   list.dataset.arrKey = nodeKey;
 
-  const items = node._value || [];
+  var items = node._value || [];
   if (!openArrItems.has(nodeKey)) openArrItems.set(nodeKey, new Set([0]));
-  const openSet = openArrItems.get(nodeKey);
+  var openSet = openArrItems.get(nodeKey);
 
-  items.forEach((item, idx) => {
+  items.forEach(function(item, idx) {
     list.appendChild(buildArrItem(nodeKey, node, item, idx, items, openSet));
   });
 
-  const addBtn = document.createElement("button");
+  var addBtn = document.createElement("button");
   addBtn.className = "arr-add-btn";
-  addBtn.innerHTML = `<span>＋</span> Add item`;
-  if (items.length >= (node._maxItems || 20)) { addBtn.disabled = true; }
+  addBtn.innerHTML = '<span>＋</span> Add item';
+  if (items.length >= (node._maxItems || 20)) addBtn.disabled = true;
 
-  addBtn.addEventListener("click", () => {
-    const newItem = {};
-    for (const [k, fs] of Object.entries(node._itemSchema || {})) {
-      newItem[k] = fs._type === "boolean" ? false : fs._type === "select" ? (fs._options?.[0]||"") : fs._type === "number" ? 0 : "";
-    }
+  addBtn.addEventListener("click", function() {
+    var newItem = {};
+    Object.keys(node._itemSchema || {}).forEach(function(k) {
+      var fs = node._itemSchema[k];
+      newItem[k] = fs._type === "boolean" ? false : fs._type === "select" ? (fs._options && fs._options[0] || "") : fs._type === "number" ? 0 : "";
+    });
     items.push(newItem);
     openSet.add(items.length - 1);
     render();
   });
 
   if (node._description) {
-    const desc = document.createElement("div");
+    var desc = document.createElement("div");
     desc.className = "field-desc";
     desc.style.marginBottom = "8px";
     desc.textContent = node._description;
@@ -1181,78 +1234,77 @@ function buildArrayEditor(nodeKey, node, path) {
 }
 
 function buildArrItem(nodeKey, node, item, idx, items, openSet) {
-  const isOpen = openSet.has(idx);
-  const schema = node._itemSchema || {};
+  var isOpen = openSet.has(idx);
+  var schema = node._itemSchema || {};
 
-  // preview string
-  const previewKey = Object.keys(schema).find(k => schema[k]._type === "text" && schema[k]._required) || Object.keys(schema)[0];
-  const preview = item[previewKey] || `Item ${idx + 1}`;
+  var previewKey = Object.keys(schema).find(function(k) {
+    return schema[k]._type === "text" && schema[k]._required;
+  }) || Object.keys(schema)[0] || "value";
+  var preview = item[previewKey] !== undefined ? String(item[previewKey]) : ("Item " + (idx + 1));
 
-  const el = document.createElement("div");
+  var el = document.createElement("div");
   el.className = "arr-item" + (isOpen ? " open" : "");
   el.draggable = !!node._reorderable;
 
-  el.innerHTML = `
-    <div class="arr-item-header">
-      <span class="arr-item-index">#${idx + 1}</span>
-      <span class="arr-item-preview">${preview}</span>
-      <button class="arr-item-del" title="Remove item">×</button>
-    </div>
-    <div class="arr-item-body"></div>
-  `;
+  el.innerHTML =
+    '<div class="arr-item-header">' +
+      '<span class="arr-item-index">#' + (idx + 1) + '</span>' +
+      '<span class="arr-item-preview">' + escHtml(preview) + '</span>' +
+      '<button class="arr-item-del" title="Remove item">\xd7</button>' +
+    '</div>' +
+    '<div class="arr-item-body"></div>';
 
-  el.querySelector(".arr-item-header").addEventListener("click", (e) => {
+  el.querySelector(".arr-item-header").addEventListener("click", function(e) {
     if (e.target.closest(".arr-item-del")) return;
-    openSet.has(idx) ? openSet.delete(idx) : openSet.add(idx);
+    if (openSet.has(idx)) openSet.delete(idx); else openSet.add(idx);
     render();
   });
 
-  el.querySelector(".arr-item-del").addEventListener("click", () => {
+  el.querySelector(".arr-item-del").addEventListener("click", function() {
     items.splice(idx, 1);
     render();
   });
 
   if (isOpen) {
-    const body = el.querySelector(".arr-item-body");
-    const fg = document.createElement("div");
+    var body = el.querySelector(".arr-item-body");
+    var fg = document.createElement("div");
     fg.className = "field-group";
-    for (const [k, fs] of Object.entries(schema)) {
-      const fakeNode = Object.assign({}, fs, { _value: item[k] !== undefined ? item[k] : (fs._type === "boolean" ? false : "") });
-      fakeNode._editable = true;
-
-      // intercept changes to write back to item
-      const fieldEl = buildField(nodeKey, fakeNode, [k]);
-      // override event by watching fakeNode._value via proxy? easier: patch inputs after build
+    Object.keys(schema).forEach(function(k) {
+      var fs = schema[k];
+      var fakeNode = Object.assign({}, fs, {
+        _value: item[k] !== undefined ? item[k] : (fs._type === "boolean" ? false : ""),
+        _editable: true
+      });
+      var fieldEl = buildField(nodeKey, fakeNode, [k]);
       patchFieldToItem(fieldEl, fakeNode, item, k);
       fg.appendChild(fieldEl);
-    }
+    });
     body.appendChild(fg);
   }
 
-  // drag for reorder
   if (node._reorderable) {
-    el.addEventListener("dragstart", (e) => {
-      dragSrcArr = { key: nodeKey, idx };
+    el.addEventListener("dragstart", function(e) {
+      dragSrcArr = { key: nodeKey, idx: idx };
       el.classList.add("dragging");
       e.dataTransfer.effectAllowed = "move";
       e.stopPropagation();
     });
-    el.addEventListener("dragend", () => {
+    el.addEventListener("dragend", function() {
       el.classList.remove("dragging");
       dragSrcArr = null;
     });
-    el.addEventListener("dragover", (e) => {
+    el.addEventListener("dragover", function(e) {
       if (dragSrcArr && dragSrcArr.key === nodeKey && dragSrcArr.idx !== idx) {
         e.preventDefault(); e.stopPropagation();
         el.classList.add("drag-target");
       }
     });
-    el.addEventListener("dragleave", () => el.classList.remove("drag-target"));
-    el.addEventListener("drop", (e) => {
+    el.addEventListener("dragleave", function() { el.classList.remove("drag-target"); });
+    el.addEventListener("drop", function(e) {
       e.preventDefault(); e.stopPropagation();
       el.classList.remove("drag-target");
       if (dragSrcArr && dragSrcArr.key === nodeKey && dragSrcArr.idx !== idx) {
-        const [moved] = items.splice(dragSrcArr.idx, 1);
+        var moved = items.splice(dragSrcArr.idx, 1)[0];
         items.splice(idx, 0, moved);
         render();
       }
@@ -1263,42 +1315,45 @@ function buildArrItem(nodeKey, node, item, idx, items, openSet) {
 }
 
 function patchFieldToItem(fieldEl, fakeNode, item, key) {
-  const inp = fieldEl.querySelector("input, select, textarea");
+  var inp = fieldEl.querySelector("input, select, textarea");
   if (!inp) return;
   if (fakeNode._type === "boolean") {
-    inp.addEventListener("change", () => { item[key] = inp.checked; refreshPreview(); });
+    inp.addEventListener("change", function() { item[key] = inp.checked; refreshPreview(); });
   } else if (fakeNode._type === "number") {
-    inp.addEventListener("input", () => { item[key] = Number(inp.value); refreshPreview(); });
+    inp.addEventListener("input", function() { item[key] = Number(inp.value); refreshPreview(); });
   } else {
-    inp.addEventListener("input", () => { item[key] = inp.value; refreshPreview(); });
-    inp.addEventListener("change", () => { item[key] = inp.value; refreshPreview(); });
+    inp.addEventListener("input", function() { item[key] = inp.value; refreshPreview(); });
+    inp.addEventListener("change", function() { item[key] = inp.value; refreshPreview(); });
   }
 }
 
 function buildCharCount(len, max) {
-  const d = document.createElement("div");
+  var d = document.createElement("div");
   d.className = "char-row";
-  const s = document.createElement("span");
+  var s = document.createElement("span");
   s.className = "char-count";
-  if (max) { s.textContent = `${len} / ${max}`; }
+  if (max) s.textContent = len + " / " + max;
   d.appendChild(s);
   return d;
 }
+
 function updateCharCount(wrap, len, max) {
-  const s = wrap.querySelector(".char-count");
+  var s = wrap.querySelector(".char-count");
   if (!s || !max) return;
-  s.textContent = `${len} / ${max}`;
+  s.textContent = len + " / " + max;
   s.className = "char-count" + (len >= max ? " over" : len >= max * 0.85 ? " warn" : "");
 }
 
 function reorderSections(fromKey, toKey) {
-  const keys = Object.keys(template);
-  const fromIdx = keys.indexOf(fromKey);
-  const toIdx   = keys.indexOf(toKey);
-  const entries = Object.entries(template);
-  const [moved] = entries.splice(fromIdx, 1);
+  var keys = Object.keys(template);
+  var fromIdx = keys.indexOf(fromKey);
+  var toIdx   = keys.indexOf(toKey);
+  var entries = Object.keys(template).map(function(k) { return [k, template[k]]; });
+  var moved = entries.splice(fromIdx, 1)[0];
   entries.splice(toIdx, 0, moved);
-  template = Object.fromEntries(entries);
+  var newTemplate = {};
+  entries.forEach(function(e) { newTemplate[e[0]] = e[1]; });
+  template = newTemplate;
   render();
 }
 
@@ -1311,40 +1366,36 @@ function refreshPreview() {
 }
 
 function renderOutput() {
-  const out = extractOutput(template);
-  const raw = JSON.stringify(out, null, 2);
-  const el = document.getElementById("preview-body");
+  var out = extractOutput(template);
+  var raw = JSON.stringify(out, null, 2);
+  var el = document.getElementById("preview-body");
   el.innerHTML = syntaxHL(raw);
   el.classList.remove("template-view");
   el.classList.add("flash");
-  setTimeout(() => el.classList.remove("flash"), 400);
+  setTimeout(function() { el.classList.remove("flash"); }, 400);
 }
 
 function renderTemplate() {
-  const el = document.getElementById("preview-body");
+  var el = document.getElementById("preview-body");
   el.className = "preview-body template-view";
-  // show template with annotation comments
-  const lines = JSON.stringify(template, null, 2).split("\n");
-  el.innerHTML = lines.map(line => {
-    // highlight _meta keys differently
-    if (/"_\w+"/.test(line)) {
-      return `<span class="jcmt">${escHtml(line)}</span>`;
-    }
+  var lines = JSON.stringify(template, null, 2).split("\n");
+  el.innerHTML = lines.map(function(line) {
+    if (/"_\w+"/.test(line)) return '<span class="jcmt">' + escHtml(line) + '</span>';
     return syntaxHL(line);
   }).join("\n");
 }
 
 function syntaxHL(json) {
-  return escHtml(json).replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
-    if (/^"/.test(match)) return /:$/.test(match) ? `<span class="jk">${match}</span>` : `<span class="js">${match}</span>`;
-    if (/true|false/.test(match)) return `<span class="jb">${match}</span>`;
-    if (/null/.test(match)) return `<span class="jnull">${match}</span>`;
-    return `<span class="jn">${match}</span>`;
+  return escHtml(json).replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+    if (/^"/.test(match)) return /:$/.test(match) ? '<span class="jk">' + match + '</span>' : '<span class="js">' + match + '</span>';
+    if (/true|false/.test(match)) return '<span class="jb">' + match + '</span>';
+    if (/null/.test(match)) return '<span class="jnull">' + match + '</span>';
+    return '<span class="jn">' + match + '</span>';
   });
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 function showTab(tab) {
@@ -1355,99 +1406,131 @@ function showTab(tab) {
 }
 
 function copyPreview() {
-  const el = document.getElementById("preview-body");
-  navigator.clipboard.writeText(el.innerText).then(() => {
-    const btn = document.getElementById("copy-btn");
+  var el = document.getElementById("preview-body");
+  navigator.clipboard.writeText(el.innerText).then(function() {
+    var btn = document.getElementById("copy-btn");
     btn.textContent = "Copied!"; btn.classList.add("ok");
-    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("ok"); }, 1500);
+    setTimeout(function() { btn.textContent = "Copy"; btn.classList.remove("ok"); }, 1500);
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK SAVE API
+// MOCK SAVE
 // ─────────────────────────────────────────────────────────────────────────────
 function saveJSON() {
-  const btn = document.getElementById("save-btn");
+  var btn = document.getElementById("save-btn");
   btn.disabled = true;
-  btn.innerHTML = `<span style="display:inline-block;animation:spin 0.7s linear infinite">⟳</span> Saving…`;
+  btn.innerHTML = '<span style="display:inline-block;animation:spin 0.7s linear infinite">\u27f3</span> Saving\u2026';
 
-  const payload = extractOutput(template);
-  const endpoint = "https://api.example.com/v1/config/product-page";
+  var payload = extractOutput(template);
+  var endpoint = "https://api.example.com/v1/config/product-page";
 
   logAPI("POST", endpoint, "pending");
 
-  // simulate network delay
-  setTimeout(() => {
-    const success = Math.random() > 0.1; // 90% success
+  setTimeout(function() {
+    var success = Math.random() > 0.1;
     btn.disabled = false;
-    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save`;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save';
 
     if (success) {
       logAPI("POST", endpoint, "201");
-      console.log("[JSONForge] Payload sent:", JSON.stringify(payload, null, 2));
-      showToast("success", "Saved successfully", `POST ${endpoint} · 201 Created`);
+      console.log("[JSONForge] Payload:", JSON.stringify(payload, null, 2));
+      showToast("success", "Saved successfully", "POST " + endpoint + " \u00b7 201 Created");
     } else {
       logAPI("POST", endpoint, "500");
-      showToast("error", "Save failed", "500 Internal Server Error — try again");
+      showToast("error", "Save failed", "500 Internal Server Error \u2014 try again");
     }
   }, 900 + Math.random() * 400);
 }
 
 function logAPI(method, url, status) {
-  const log = document.getElementById("api-log");
-  const entry = document.createElement("div");
+  var log = document.getElementById("api-log");
+  var entry = document.createElement("div");
   entry.className = "api-log-entry";
-  const time = new Date().toLocaleTimeString();
-  const statusCls = status === "pending" ? "" : status.startsWith("2") ? "status-ok" : "status-err";
-  entry.innerHTML = `<span style="color:#444">${time}</span><span class="method">${method}</span><span style="color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${url.replace("https://","")}</span><span class="${statusCls}">${status}</span>`;
-  // replace pending with result
-  const pending = log.querySelector(".pending-entry");
-  if (pending && status !== "pending") { log.removeChild(pending); }
+  var time = new Date().toLocaleTimeString();
+  var statusCls = status === "pending" ? "" : status.startsWith("2") ? "status-ok" : "status-err";
+  entry.innerHTML = '<span style="color:#444">' + time + '</span><span class="method">' + method + '</span><span style="color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">' + url.replace("https://","") + '</span><span class="' + statusCls + '">' + status + '</span>';
+  var pending = log.querySelector(".pending-entry");
+  if (pending && status !== "pending") log.removeChild(pending);
   if (status === "pending") entry.classList.add("pending-entry");
-  // clear placeholder
   if (log.querySelector("[style]")) log.innerHTML = "";
   log.appendChild(entry);
   log.scrollTop = log.scrollHeight;
 }
 
 function showToast(type, msg, sub) {
-  const t = document.getElementById("toast");
-  document.getElementById("toast-icon").textContent = type === "success" ? "✓" : "✗";
+  var t = document.getElementById("toast");
+  document.getElementById("toast-icon").textContent = type === "success" ? "\u2713" : "\u2717";
   document.getElementById("toast-msg").textContent  = msg;
   document.getElementById("toast-sub").textContent  = sub;
   t.className = "show " + type;
-  setTimeout(() => { t.className = ""; }, 3500);
+  setTimeout(function() { t.className = ""; }, 3500);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LOAD DIALOG
+// LOAD DIALOG — supports both plain JSON and annotated templates
 // ─────────────────────────────────────────────────────────────────────────────
 function loadTemplateDialog() {
-  const ov = document.getElementById("load-overlay");
+  var ov = document.getElementById("load-overlay");
   document.getElementById("load-textarea").value = JSON.stringify(template, null, 2);
   ov.style.display = "flex";
 }
+
 function closeLoadDialog() {
   document.getElementById("load-overlay").style.display = "none";
 }
+
 function loadFromDialog() {
+  var raw = document.getElementById("load-textarea").value.trim();
+
+  if (!raw) {
+    alert("Please paste a JSON value first.");
+    return;
+  }
+
+  var parsed;
   try {
-    const raw = document.getElementById("load-textarea").value;
-    template = JSON.parse(raw);
-    openCards = new Set(Object.keys(template).filter(k => !k.startsWith("_")));
-    openArrItems.clear();
-    closeLoadDialog();
-    render();
-    showToast("success", "Template loaded", "Editor rebuilt from new template");
+    parsed = JSON.parse(raw);
   } catch(e) {
     alert("Invalid JSON: " + e.message);
+    return;
+  }
+
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    alert("Top-level JSON must be an object (not an array or primitive).");
+    return;
+  }
+
+  try {
+    if (isAnnotatedTemplate(parsed)) {
+      // Already annotated — use as-is
+      template = parsed;
+    } else {
+      // Plain JSON — convert to annotated format
+      template = plainJsonToTemplate(parsed);
+    }
+
+    // Derive template name from title key if present
+    var titleTag = document.getElementById("template-name-tag");
+    var nameGuess = parsed.title
+      ? (typeof parsed.title === "string" ? parsed.title : (parsed.title.en || "loaded-template"))
+      : "loaded-template";
+    titleTag.innerHTML = 'Template: <strong>' + escHtml(nameGuess) + '</strong>';
+
+    openCards = new Set(Object.keys(template).filter(function(k) { return !k.startsWith("_"); }));
+    openArrItems = new Map();
+    closeLoadDialog();
+    render();
+    showToast("success", "Template loaded", "Editor rebuilt from JSON");
+  } catch(e) {
+    alert("Failed to process JSON: " + e.message);
   }
 }
 
 // spin animation
-const style = document.createElement("style");
-style.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
-document.head.appendChild(style);
+var spinStyle = document.createElement("style");
+spinStyle.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
+document.head.appendChild(spinStyle);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BOOT
