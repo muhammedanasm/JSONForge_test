@@ -425,68 +425,6 @@ header {
 .arr-add-btn:hover { border-color: var(--accent-bd); color: var(--accent); background: var(--accent-bg); }
 .arr-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* nested object block inside array items */
-.nested-obj-block {
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border2);
-  border-radius: var(--radius);
-  margin-top: 2px;
-  overflow: hidden;
-  background: var(--surface);
-}
-.nested-obj-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: 1px solid transparent;
-  transition: background 0.12s;
-}
-.nested-obj-header:hover { background: var(--surface2); }
-.nested-obj-block.open .nested-obj-header { border-bottom-color: var(--border); }
-.nested-obj-body { padding: 10px 12px; display: none; }
-.nested-obj-block.open .nested-obj-body { display: block; }
-.nested-obj-key {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink);
-  flex: 1;
-}
-
-/* nested array block inside array items */
-.nested-arr-block {
-  border: 1px solid var(--border);
-  border-left: 3px solid #86efac;
-  border-radius: var(--radius);
-  margin-top: 2px;
-  overflow: hidden;
-  background: var(--surface);
-}
-.nested-arr-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: 1px solid transparent;
-  transition: background 0.12s;
-}
-.nested-arr-header:hover { background: var(--surface2); }
-.nested-arr-block.open .nested-arr-header { border-bottom-color: var(--border); }
-.nested-arr-body { padding: 10px 12px; display: none; }
-.nested-arr-block.open .nested-arr-body { display: block; }
-.nested-arr-key {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink);
-  flex: 1;
-}
-
 .nested-card {
   border: 1px solid var(--border);
   border-left: 3px solid var(--border2);
@@ -880,9 +818,6 @@ const MOCK_TEMPLATE = {
 let template = MOCK_TEMPLATE;
 let openCards = new Set(["page","hero","features","pricing","seo"]);
 let openArrItems = new Map();
-// tracks open state for nested obj/arr blocks inside array items
-// key: "nodeKey:itemIdx:fieldKey[:subIdx...]"
-let openNestedBlocks = new Set();
 let dragSrcSection = null;
 let dragSrcArr = null;
 let currentTab = "output";
@@ -892,10 +827,12 @@ let currentTab = "output";
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isAnnotatedTemplate(obj) {
+  // Check if the object uses _value/_editable/_type convention
   if (typeof obj !== "object" || obj === null) return false;
   return Object.values(obj).some(function(v) {
     if (v && typeof v === "object") {
       if ("_value" in v || "_editable" in v || "_type" in v) return true;
+      // Check one level deeper
       return Object.values(v).some(function(v2) {
         return v2 && typeof v2 === "object" && ("_value" in v2 || "_editable" in v2);
       });
@@ -920,38 +857,41 @@ function convertValueToAnnotated(value) {
 
   var t = inferType(value);
 
-  if (t === "boolean") return { _value: value, _editable: true, _type: "boolean" };
-  if (t === "number")  return { _value: value, _editable: true, _type: "number" };
-  if (t === "text" || t === "textarea") return { _value: value, _editable: true, _type: t };
+  if (t === "boolean") {
+    return { _value: value, _editable: true, _type: "boolean" };
+  }
+
+  if (t === "number") {
+    return { _value: value, _editable: true, _type: "number" };
+  }
+
+  if (t === "text" || t === "textarea") {
+    return { _value: value, _editable: true, _type: t };
+  }
 
   if (t === "array") {
     if (value.length === 0) {
       return { _type: "array", _editable: true, _reorderable: true, _value: [], _itemSchema: {} };
     }
-    // Build schema from ALL items (merge keys) — supports heterogeneous arrays
     var schema = {};
-    value.forEach(function(item) {
-      if (item !== null && typeof item === "object" && !Array.isArray(item)) {
-        Object.keys(item).forEach(function(k) {
-          if (!schema[k]) {
-            var fv = item[k];
-            var ft = inferType(fv);
-            // For object/array fields in schema, mark as such — rendering handles them
-            schema[k] = { _type: ft, _editable: true };
-          }
-        });
-      } else {
-        if (!schema["value"]) schema["value"] = { _type: "text", _editable: true };
-      }
-    });
-
+    var firstItem = value[0];
+    if (firstItem !== null && typeof firstItem === "object" && !Array.isArray(firstItem)) {
+      Object.keys(firstItem).forEach(function(k) {
+        var fv = firstItem[k];
+        var ft = inferType(fv);
+        schema[k] = { _type: ft === "object" || ft === "array" ? "text" : ft, _editable: true };
+      });
+    } else {
+      schema["value"] = { _type: "text", _editable: true };
+    }
     var items = value.map(function(item) {
       if (item !== null && typeof item === "object" && !Array.isArray(item)) {
-        return JSON.parse(JSON.stringify(item)); // deep clone, keep as plain obj
+        var out = {};
+        Object.keys(item).forEach(function(k) { out[k] = item[k]; });
+        return out;
       }
       return { value: item };
     });
-
     return {
       _type: "array",
       _editable: true,
@@ -962,6 +902,7 @@ function convertValueToAnnotated(value) {
   }
 
   if (t === "object") {
+    // Recurse: convert each key
     var result = {};
     Object.keys(value).forEach(function(k) {
       result[k] = convertValueToAnnotated(value[k]);
@@ -975,7 +916,8 @@ function convertValueToAnnotated(value) {
 function plainJsonToTemplate(parsed) {
   var result = {};
   Object.keys(parsed).forEach(function(k) {
-    result[k] = convertValueToAnnotated(parsed[k]);
+    var v = parsed[k];
+    result[k] = convertValueToAnnotated(v);
   });
   return result;
 }
@@ -990,7 +932,11 @@ function extractOutput(node) {
   if ("_value" in node) {
     if (node._type === "array") {
       return (node._value || []).map(function(item) {
-        return extractPlainObject(item);
+        var out = {};
+        Object.keys(item).forEach(function(k) {
+          if (!k.startsWith("_")) out[k] = item[k];
+        });
+        return out;
       });
     }
     return node._value;
@@ -999,17 +945,6 @@ function extractOutput(node) {
   var result = {};
   Object.keys(node).forEach(function(k) {
     if (!k.startsWith("_")) result[k] = extractOutput(node[k]);
-  });
-  return result;
-}
-
-// Recursively extract a plain (non-annotated) item object — used for array items
-function extractPlainObject(obj) {
-  if (obj === null || typeof obj !== "object") return obj;
-  if (Array.isArray(obj)) return obj.map(extractPlainObject);
-  var result = {};
-  Object.keys(obj).forEach(function(k) {
-    result[k] = extractPlainObject(obj[k]);
   });
   return result;
 }
@@ -1125,6 +1060,7 @@ function buildObjectFields(sectionKey, node, path) {
     var fullPath = path.concat([k]);
 
     if (v && typeof v === "object" && !("_value" in v) && v._type !== "array") {
+      // nested object
       var nested = document.createElement("div");
       nested.className = "nested-card";
       var nk = sectionKey + "." + k;
@@ -1275,16 +1211,9 @@ function buildArrayEditor(nodeKey, node, path) {
 
   addBtn.addEventListener("click", function() {
     var newItem = {};
-    var schema = node._itemSchema || {};
-    Object.keys(schema).forEach(function(k) {
-      var fs = schema[k];
-      var ft = fs._type || "text";
-      if (ft === "boolean") newItem[k] = false;
-      else if (ft === "number") newItem[k] = 0;
-      else if (ft === "select") newItem[k] = (fs._options && fs._options[0]) || "";
-      else if (ft === "object") newItem[k] = {};
-      else if (ft === "array") newItem[k] = [];
-      else newItem[k] = "";
+    Object.keys(node._itemSchema || {}).forEach(function(k) {
+      var fs = node._itemSchema[k];
+      newItem[k] = fs._type === "boolean" ? false : fs._type === "select" ? (fs._options && fs._options[0] || "") : fs._type === "number" ? 0 : "";
     });
     items.push(newItem);
     openSet.add(items.length - 1);
@@ -1304,24 +1233,14 @@ function buildArrayEditor(nodeKey, node, path) {
   return wrap;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ARRAY ITEM BUILDER — now handles nested objects & arrays recursively
-// ─────────────────────────────────────────────────────────────────────────────
 function buildArrItem(nodeKey, node, item, idx, items, openSet) {
   var isOpen = openSet.has(idx);
   var schema = node._itemSchema || {};
 
-  // Build preview from first non-object, non-array string/number field
-  var previewVal = "";
-  var allKeys = Object.keys(item);
-  for (var pi = 0; pi < allKeys.length; pi++) {
-    var pv = item[allKeys[pi]];
-    if (pv !== null && pv !== undefined && typeof pv !== "object") {
-      previewVal = String(pv);
-      break;
-    }
-  }
-  if (!previewVal) previewVal = "Item " + (idx + 1);
+  var previewKey = Object.keys(schema).find(function(k) {
+    return schema[k]._type === "text" && schema[k]._required;
+  }) || Object.keys(schema)[0] || "value";
+  var preview = item[previewKey] !== undefined ? String(item[previewKey]) : ("Item " + (idx + 1));
 
   var el = document.createElement("div");
   el.className = "arr-item" + (isOpen ? " open" : "");
@@ -1330,7 +1249,7 @@ function buildArrItem(nodeKey, node, item, idx, items, openSet) {
   el.innerHTML =
     '<div class="arr-item-header">' +
       '<span class="arr-item-index">#' + (idx + 1) + '</span>' +
-      '<span class="arr-item-preview">' + escHtml(previewVal) + '</span>' +
+      '<span class="arr-item-preview">' + escHtml(preview) + '</span>' +
       '<button class="arr-item-del" title="Remove item">\xd7</button>' +
     '</div>' +
     '<div class="arr-item-body"></div>';
@@ -1350,45 +1269,16 @@ function buildArrItem(nodeKey, node, item, idx, items, openSet) {
     var body = el.querySelector(".arr-item-body");
     var fg = document.createElement("div");
     fg.className = "field-group";
-
-    // Render all keys from the actual item (not just schema keys)
-    var itemKeys = Object.keys(item);
-    // Also include schema keys not yet in item
     Object.keys(schema).forEach(function(k) {
-      if (itemKeys.indexOf(k) === -1) itemKeys.push(k);
+      var fs = schema[k];
+      var fakeNode = Object.assign({}, fs, {
+        _value: item[k] !== undefined ? item[k] : (fs._type === "boolean" ? false : ""),
+        _editable: true
+      });
+      var fieldEl = buildField(nodeKey, fakeNode, [k]);
+      patchFieldToItem(fieldEl, fakeNode, item, k);
+      fg.appendChild(fieldEl);
     });
-
-    itemKeys.forEach(function(k) {
-      var rawVal = item[k];
-      var schemaHint = schema[k] || {};
-      var schemaType = schemaHint._type || inferType(rawVal !== undefined ? rawVal : "");
-
-      var blockKey = nodeKey + ":" + idx + ":" + k;
-
-      if (rawVal !== null && rawVal !== undefined && typeof rawVal === "object" && !Array.isArray(rawVal)) {
-        // Nested OBJECT
-        fg.appendChild(buildNestedObjBlock(blockKey, k, rawVal, item, k));
-      } else if (Array.isArray(rawVal)) {
-        // Nested ARRAY
-        fg.appendChild(buildNestedArrBlock(blockKey, k, rawVal, item, k));
-      } else {
-        // Primitive field
-        var effectiveType = schemaType;
-        if (effectiveType === "object" || effectiveType === "array") effectiveType = "text";
-
-        var fakeNode = Object.assign({}, schemaHint, {
-          _value: rawVal !== undefined ? rawVal : (effectiveType === "boolean" ? false : effectiveType === "number" ? 0 : ""),
-          _editable: true,
-          _type: effectiveType
-        });
-
-        var fieldEl = buildField(nodeKey, fakeNode, [k]);
-        // Wire input changes back to item[k]
-        wireFieldToItemKey(fieldEl, fakeNode, item, k);
-        fg.appendChild(fieldEl);
-      }
-    });
-
     body.appendChild(fg);
   }
 
@@ -1424,149 +1314,17 @@ function buildArrItem(nodeKey, node, item, idx, items, openSet) {
   return el;
 }
 
-// Build a collapsible block for a nested plain object inside an array item
-function buildNestedObjBlock(blockKey, label, obj, parentItem, parentKey) {
-  var isOpen = openNestedBlocks.has(blockKey);
-  var keyCount = Object.keys(obj).length;
-
-  var block = document.createElement("div");
-  block.className = "nested-obj-block" + (isOpen ? " open" : "");
-
-  block.innerHTML =
-    '<div class="nested-obj-header">' +
-      '<div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>' +
-      '<span class="nested-obj-key">' + escHtml(label) + '</span>' +
-      '<span class="type-badge tb-object">object</span>' +
-      '<span class="card-meta" style="font-size:10px;">' + keyCount + ' keys</span>' +
-    '</div>' +
-    '<div class="nested-obj-body"></div>';
-
-  block.querySelector(".nested-obj-header").addEventListener("click", function() {
-    if (openNestedBlocks.has(blockKey)) openNestedBlocks.delete(blockKey);
-    else openNestedBlocks.add(blockKey);
-    render();
-  });
-
-  if (isOpen) {
-    var body = block.querySelector(".nested-obj-body");
-    var fg = document.createElement("div");
-    fg.className = "field-group";
-
-    Object.keys(obj).forEach(function(k) {
-      var v = obj[k];
-      var subBlockKey = blockKey + ":" + k;
-
-      if (v !== null && v !== undefined && typeof v === "object" && !Array.isArray(v)) {
-        fg.appendChild(buildNestedObjBlock(subBlockKey, k, v, obj, k));
-      } else if (Array.isArray(v)) {
-        fg.appendChild(buildNestedArrBlock(subBlockKey, k, v, obj, k));
-      } else {
-        var t = inferType(v);
-        if (t === "object" || t === "array") t = "text";
-        var fakeNode = {
-          _value: v !== undefined ? v : "",
-          _editable: true,
-          _type: t
-        };
-        var fieldEl = buildField(blockKey, fakeNode, [k]);
-        wireFieldToItemKey(fieldEl, fakeNode, obj, k);
-        fg.appendChild(fieldEl);
-      }
-    });
-
-    body.appendChild(fg);
-  }
-
-  return block;
-}
-
-// Build a collapsible block for a nested plain array inside an array item
-function buildNestedArrBlock(blockKey, label, arr, parentItem, parentKey) {
-  var isOpen = openNestedBlocks.has(blockKey);
-
-  var block = document.createElement("div");
-  block.className = "nested-arr-block" + (isOpen ? " open" : "");
-
-  block.innerHTML =
-    '<div class="nested-arr-header">' +
-      '<div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>' +
-      '<span class="nested-arr-key">' + escHtml(label) + '</span>' +
-      '<span class="type-badge tb-array">array</span>' +
-      '<span class="card-meta" style="font-size:10px;">' + arr.length + ' items</span>' +
-    '</div>' +
-    '<div class="nested-arr-body"></div>';
-
-  block.querySelector(".nested-arr-header").addEventListener("click", function() {
-    if (openNestedBlocks.has(blockKey)) openNestedBlocks.delete(blockKey);
-    else openNestedBlocks.add(blockKey);
-    render();
-  });
-
-  if (isOpen) {
-    var body = block.querySelector(".nested-arr-body");
-    var fg = document.createElement("div");
-    fg.className = "field-group";
-
-    // Build a synthetic node so we can reuse buildArrayEditor
-    // We need a node with _type:array and _value:arr
-    var firstItem = arr[0];
-    var itemSchema = {};
-    if (firstItem && typeof firstItem === "object" && !Array.isArray(firstItem)) {
-      Object.keys(firstItem).forEach(function(k) {
-        var ft = inferType(firstItem[k]);
-        itemSchema[k] = { _type: ft, _editable: true };
-      });
-    }
-
-    var syntheticNode = {
-      _type: "array",
-      _editable: true,
-      _reorderable: false,
-      _itemSchema: itemSchema,
-      _value: arr
-    };
-
-    // Sync: arr IS the same reference as parentItem[parentKey], so mutations go through
-    fg.appendChild(buildArrayEditor(blockKey, syntheticNode));
-    body.appendChild(fg);
-  }
-
-  return block;
-}
-
-// Wire field input events to write back into a plain object's key
-function wireFieldToItemKey(fieldEl, fakeNode, obj, key) {
+function patchFieldToItem(fieldEl, fakeNode, item, key) {
   var inp = fieldEl.querySelector("input, select, textarea");
   if (!inp) return;
   if (fakeNode._type === "boolean") {
-    inp.addEventListener("change", function() {
-      obj[key] = inp.checked;
-      fakeNode._value = inp.checked;
-      refreshPreview();
-    });
+    inp.addEventListener("change", function() { item[key] = inp.checked; refreshPreview(); });
   } else if (fakeNode._type === "number") {
-    inp.addEventListener("input", function() {
-      obj[key] = Number(inp.value);
-      fakeNode._value = Number(inp.value);
-      refreshPreview();
-    });
+    inp.addEventListener("input", function() { item[key] = Number(inp.value); refreshPreview(); });
   } else {
-    inp.addEventListener("input", function() {
-      obj[key] = inp.value;
-      fakeNode._value = inp.value;
-      refreshPreview();
-    });
-    inp.addEventListener("change", function() {
-      obj[key] = inp.value;
-      fakeNode._value = inp.value;
-      refreshPreview();
-    });
+    inp.addEventListener("input", function() { item[key] = inp.value; refreshPreview(); });
+    inp.addEventListener("change", function() { item[key] = inp.value; refreshPreview(); });
   }
-}
-
-// Legacy shim kept for annotated-template array items
-function patchFieldToItem(fieldEl, fakeNode, item, key) {
-  wireFieldToItemKey(fieldEl, fakeNode, item, key);
 }
 
 function buildCharCount(len, max) {
@@ -1710,7 +1468,7 @@ function showToast(type, msg, sub) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LOAD DIALOG
+// LOAD DIALOG — supports both plain JSON and annotated templates
 // ─────────────────────────────────────────────────────────────────────────────
 function loadTemplateDialog() {
   var ov = document.getElementById("load-overlay");
@@ -1725,11 +1483,18 @@ function closeLoadDialog() {
 function loadFromDialog() {
   var raw = document.getElementById("load-textarea").value.trim();
 
-  if (!raw) { alert("Please paste a JSON value first."); return; }
+  if (!raw) {
+    alert("Please paste a JSON value first.");
+    return;
+  }
 
   var parsed;
-  try { parsed = JSON.parse(raw); }
-  catch(e) { alert("Invalid JSON: " + e.message); return; }
+  try {
+    parsed = JSON.parse(raw);
+  } catch(e) {
+    alert("Invalid JSON: " + e.message);
+    return;
+  }
 
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
     alert("Top-level JSON must be an object (not an array or primitive).");
@@ -1738,11 +1503,14 @@ function loadFromDialog() {
 
   try {
     if (isAnnotatedTemplate(parsed)) {
+      // Already annotated — use as-is
       template = parsed;
     } else {
+      // Plain JSON — convert to annotated format
       template = plainJsonToTemplate(parsed);
     }
 
+    // Derive template name from title key if present
     var titleTag = document.getElementById("template-name-tag");
     var nameGuess = parsed.title
       ? (typeof parsed.title === "string" ? parsed.title : (parsed.title.en || "loaded-template"))
@@ -1751,7 +1519,6 @@ function loadFromDialog() {
 
     openCards = new Set(Object.keys(template).filter(function(k) { return !k.startsWith("_"); }));
     openArrItems = new Map();
-    openNestedBlocks = new Set();
     closeLoadDialog();
     render();
     showToast("success", "Template loaded", "Editor rebuilt from JSON");
