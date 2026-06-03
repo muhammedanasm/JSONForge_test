@@ -2969,8 +2969,39 @@
 
     var pdSelectedMenu = null; // { menuId, menuName }
     var pdSelectedOption = null; // "LIST" | "ENTRY" | "SEARCH"
-    var pdHasUnsaved = false;
-    var pdActive = false; // true when editor is loaded from PD
+    var pdHasUnsaved     = false;
+    var pdActive         = false; // true when editor is loaded from PD
+    var pdOriginalIsArray = false; // true when the loaded config root was a JSON array
+
+    // ── Array restoration helper ──────────────────────────────────────────────
+    // JSONForge's template engine stores everything as objects internally.
+    // When the original config was an array, extractOutput() returns
+    // { "0": {...}, "1": {...}, "2": {...} } — numeric string keys.
+    // This function recursively detects that pattern and converts it back to [].
+    function pdRestoreArrays(val) {
+      if (Array.isArray(val)) {
+        // Already an array — recurse into items
+        return val.map(pdRestoreArrays);
+      }
+      if (val && typeof val === 'object') {
+        var keys = Object.keys(val);
+        // Detect numeric-keyed object: keys are "0","1","2",... with no gaps
+        var isNumericObj = keys.length > 0 && keys.every(function(k, i) {
+          return k === String(i);
+        });
+        if (isNumericObj) {
+          // Convert to array and recurse
+          return keys.map(function(k) { return pdRestoreArrays(val[k]); });
+        }
+        // Plain object — recurse into values
+        var out = {};
+        keys.forEach(function(k) { out[k] = pdRestoreArrays(val[k]); });
+        return out;
+      }
+      return val; // primitive — return as-is
+    }
+
+
 
     var PD_OPTIONS = [
       { value: "LIST", icon: "☰", label: "LIST", desc: "Grid / list view configuration" },
@@ -3297,7 +3328,10 @@
         data = rawResp;                    // already unwrapped or plain object
       }
 
-      // Convert to annotated template if needed
+      // Remember whether the original config was an array,
+      // so we can restore that structure on save.
+      pdOriginalIsArray = Array.isArray(data);
+
       if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
         template = { _hint: { _value: "No config returned by API. Edit and save to create one.", _editable: false } };
       } else if (isAnnotatedTemplate(data)) {
@@ -3359,7 +3393,8 @@
         endpoint = PD_BASE_URL + "/menu-config";
         method = "POST";
 
-        // Extract edited values from the annotated template
+        // Extract edited values — preserve the exact structure returned by GET
+        // (numeric-keyed object { "0":{}, "1":{}, "2":{} } is kept as-is).
         var editedJson = extractOutput(template);
 
         // Build payload exactly as the backend expects:
