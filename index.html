@@ -3393,9 +3393,25 @@
         endpoint = PD_BASE_URL + "/menu-config";
         method = "POST";
 
-        // Extract edited values — preserve the exact structure returned by GET
-        // (numeric-keyed object { "0":{}, "1":{}, "2":{} } is kept as-is).
-        var editedJson = extractOutput(template);
+        // Extract edited values — restore the exact type the GET response used.
+        // extractOutput() always returns a plain object (even for arrays),
+        // so if the original json was an array we convert the numeric-keyed
+        // object { "0":{}, "1":{} } back to a proper array [ {}, {} ].
+        var _raw = extractOutput(template);
+        var editedJson;
+        if (pdOriginalIsArray) {
+          if (_raw && typeof _raw === 'object' && !Array.isArray(_raw)) {
+            var keys = Object.keys(_raw).filter(function (k) { return !k.startsWith("_"); });
+            keys.sort(function (a, b) {
+              return parseInt(a, 10) - parseInt(b, 10);
+            });
+            editedJson = keys.map(function (k) { return _raw[k]; });
+          } else {
+            editedJson = _raw;
+          }
+        } else {
+          editedJson = _raw;
+        }
 
         // Build payload exactly as the backend expects:
         // { menuId, option, username, json: <array or object> }
